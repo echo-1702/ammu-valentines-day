@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="ta">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Amma — En Ullathil (Valentine Special)</title>
+  <meta name="description" content="Valentine special — en kaadhalin vazhthukkal, small poems, hearts and a memory book (Tanglish)." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --max-w:760px;
+      --bg-1:#fff8fb;
+      --bg-2:#fff2f8;
+      --accent-red:#ff4d86;
+      --accent-pink:#ff9ccf;
+      --text-color:#442033;
+      --muted:#8b6276;
+      --radius:18px;
+      --ctrl-bg: linear-gradient(90deg,var(--accent-red),var(--accent-pink));
+      --ctrl-hover: linear-gradient(90deg,#ff6aa0,#ffc0e0);
+    }
+
+    /* Unified font + small-caps */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      background:
+        radial-gradient(900px 420px at 8% 10%, rgba(255,200,240,0.06), transparent 12%),
+        linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:var(--text-color);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      -webkit-text-size-adjust:100%;
+      scroll-behavior: smooth;
+
+      font-variant-caps: all-small-caps;
+      font-feature-settings: "smcp" 1, "c2sc" 1;
+      letter-spacing: 0.4px;
+    }
+
+    /* apply consistent small-caps + lowercase for Latin where used */
+    * { font-variant-caps: all-small-caps; font-feature-settings: "smcp" 1, "c2sc" 1; }
+    body, .card, .title, .subtitle, .greeting, .lead, .section-title, .poem,
+    .face, .face .title-card, .face .desc, .page, footer, .v-pill, .gift, .ctrl {
+      text-transform: lowercase;
+    }
+    input, textarea, select, button, [contenteditable="true"] { text-transform: none; }
+
+    .wrap{ max-width:var(--max-w); margin:0 auto; padding:18px 14px 110px; min-height:100vh; position:relative; text-align:center; overflow-x:hidden; }
+
+    /* header */
+    header{ display:flex; gap:12px; align-items:center; justify-content:center; margin-bottom:8px; flex-direction:column; }
+    .brand{ display:flex; gap:12px; align-items:center; justify-content:center; }
+    .title{ font-size:22px; margin:0; color:var(--accent-red); line-height:1; cursor:pointer; text-align:center; }
+    .subtitle{ margin:6px 0 0; font-size:13px; color:var(--muted); text-align:center; }
+
+    .valentine-banner{ margin-top:10px; display:flex; gap:12px; align-items:center; justify-content:center; }
+    .v-pill{ background: var(--ctrl-bg); color:white; padding:8px 12px; border-radius:999px; font-weight:700; font-size:13px; box-shadow: 0 8px 24px rgba(255,77,134,0.12); text-align:center; }
+
+    /* parallax blobs (non-interactive) */
+    .parallax-layer{ position:fixed; pointer-events:none; z-index:0; inset:0; }
+    .parallax-blob{ position:absolute; border-radius:50%; filter: blur(14px); opacity:0.9; mix-blend-mode:screen; will-change: transform; transform: translateZ(0); }
+
+    .card{ margin-top:16px; padding:16px; border-radius:var(--radius); background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,250,254,0.98)); border: 1px solid rgba(255,255,255,0.7); text-align:center; position:relative; z-index:1; }
+
+    .hero{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:14px; background: linear-gradient(90deg, rgba(255,235,245,0.6), rgba(255,245,250,0.78)); position:relative; overflow:visible; flex-direction:column; justify-content:center; }
+    .greeting{ font-size:20px; margin:8px 0 6px; color:var(--accent-pink); text-align:center; }
+    .lead{ font-size:14px; color:var(--muted); margin:8px 0 0; text-align:center; max-width:86%; margin-left:auto; margin-right:auto; }
+
+    .section-title{ font-size:12px; color:var(--muted); letter-spacing:1.2px; margin:0 0 10px; text-align:center; }
+    .poem{ font-size:16px; color:var(--text-color); line-height:1.6; text-align:center; }
+
+    /* reveal */
+    .reveal{ opacity:0; transform: translateY(20px) scale(.995); transition: transform 520ms cubic-bezier(.2,.9,.25,1), opacity 520ms cubic-bezier(.2,.9,.25,1); will-change: transform, opacity; perspective:900px; }
+    .reveal.visible{ opacity:1; transform: translateY(0) scale(1); }
+
+    .blocks{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:8px; justify-items:center; }
+    .flip-card{ width:100%; min-height:96px; perspective:900px; user-select:none; -webkit-user-select:none; touch-action:manipulation; }
+    .flip-inner{ position:relative; width:100%; min-height:96px; transform-style:preserve-3d; transition: transform 480ms cubic-bezier(.2,.9,.2,1); border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .flip-card.flipped .flip-inner{ transform: rotateY(180deg); }
+    .face{ position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; padding:12px; display:flex; align-items:center; justify-content:center; flex-direction:column; background: linear-gradient(180deg,#fff7fb,#fff1f6); box-shadow: 0 10px 28px rgba(0,0,0,0.04); }
+    .face.back{ transform: rotateY(180deg); background: linear-gradient(180deg,#fff,#fff8fb); color:#341427; }
+
+    .face .title-card{ font-size:14px; margin-bottom:6px; font-weight:700; color:var(--accent-red); }
+    .face .desc{ color:var(--muted); font-size:13px; }
+
+    .dragging{ transform: scale(1.02) rotate(0.6deg); z-index:60; box-shadow: 0 24px 56px rgba(0,0,0,0.08); }
+
+    .gift-wrapper{ display:flex; justify-content:center; align-items:center; margin-top:8px; }
+    .gift{ min-width:94px; height:94px; border-radius:12px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; background: linear-gradient(180deg,#fff7f9,#ffeef6); cursor:pointer; border:1px solid rgba(255,255,255,0.7); transition: transform 220ms ease, box-shadow 220ms ease; }
+    .gift:active{ transform: translateY(-6px) scale(1.01); }
+
+    /* image modal */
+    .image-modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:360; background: rgba(18,8,20,0.6); padding:18px; }
+    .image-modal.open{ display:flex; }
+    .image-card{ width:100%; max-width:720px; border-radius:12px; overflow:hidden; background:#fff; transform-origin:center; }
+    .image-card img{ width:100%; height:auto; display:block; }
+    .image-card .caption{ padding:12px; text-align:center; color:var(--text-color); background: linear-gradient(180deg,#fff,#fff8fb); }
+    .close-btn{ position:absolute; right:14px; top:14px; background:rgba(255,255,255,0.96); border-radius:8px; padding:6px; border:none; cursor:pointer; }
+
+    /* Book */
+    .book{ margin-top:16px; display:flex; align-items:center; justify-content:center; gap:12px; flex-direction:column; }
+    .book-view{ width:100%; max-width:560px; height:220px; perspective:1200px; position:relative; }
+    .page{ width:100%; height:100%; position:absolute; left:0; top:0; transform-origin:left center; transition: transform 520ms cubic-bezier(.2,.9,.25,1), opacity 320ms ease; border-radius:12px; overflow:hidden; background:linear-gradient(180deg,#fff8fb,#fff4f6); display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:12px; box-sizing:border-box; }
+    .page.hidden{ opacity:0; pointer-events:none; }
+    .page h3 { font-size:18px; margin:0 0 6px; color:var(--accent-red); }
+
+    .book-controls{ display:flex; gap:12px; justify-content:center; margin-top:8px; }
+    .ctrl{ -webkit-appearance:none; appearance:none; border: none; padding:9px 12px; font-size:14px; border-radius:999px; color:white; background: var(--ctrl-bg); cursor:pointer; transition: transform 120ms ease, background 140ms ease; }
+
+    footer{ margin-top:20px; color:var(--muted); font-size:13px; text-align:center; display:flex; gap:8px; align-items:center; justify-content:center; flex-direction:row; }
+
+    /* particles */
+    #particle-layer{ position:fixed; inset:0; pointer-events:none; z-index:140; }
+    .particle{ position:fixed; transform: translate(-50%,-50%); pointer-events:auto; will-change: transform, opacity; user-select:none; -webkit-user-select:none; touch-action:none; font-family:inherit; }
+
+    /* Mobile-specific performance improvements: reduce shadows/filters and animations */
+    @media (max-width:720px){
+      :root{ --max-w:560px; }
+      .parallax-blob{ filter: blur(12px); }
+      .card{ padding:12px; border-radius:12px; }
+      .hero{ padding:10px; }
+      .flip-inner{ transition-duration:360ms; }
+      .page{ height:200px; transition-duration:420ms; }
+      .image-card{ max-width:640px; }
+      .v-pill{ box-shadow:none; }
+      /* disable heavy backdrop filters and big shadows on mobile */
+      .card, .image-card, .page{ box-shadow: none; }
+      .parallax-layer{ display:block; } /* still show small blobs but less intense */
+      /* particle layer keeps pointer-events:none to avoid accidental interaction */
+      #particle-layer{ pointer-events:none; }
+    }
+
+    @media print{ .modal, .image-modal, #particle-layer { display:none !important; } .card{ box-shadow:none !important; background:transparent !important; border:none !important; } }
+
+  </style>
+</head>
+<body>
+  <div class="parallax-layer" aria-hidden="true">
+    <div class="parallax-blob" id="blobA" style="width:360px;height:360px;left:-100px;top:-90px;background:linear-gradient(90deg,#ffd6f2,#ffb6dd);"></div>
+    <div class="parallax-blob" id="blobB" style="width:260px;height:260px;right:-60px;bottom:-100px;background:linear-gradient(90deg,#fff0f7,#ffd6ea);opacity:0.85;"></div>
+  </div>
+
+  <main class="wrap" id="app" aria-live="polite">
+    <header>
+      <div class="brand">
+        <div>
+          <h1 class="title" id="pageTitle" tabindex="0">Amma — En Ullathil</h1>
+          <p class="subtitle">Karthinoda unakku oru romanchana Valentine special</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="valentine-banner">
+      <div class="v-pill" aria-hidden="true">Happy Valentine — Anbu ♥</div>
+    </div>
+
+    <section class="card reveal pop-in" data-idx="1" id="intro">
+      <div class="hero">
+        <p class="greeting">Eninial Amma</p>
+        <p class="lead">Ith page unakku — nalukkum startaana mozhi, chinna manadhin touches, mattum heart surprises.</p>
+      </div>
+    </section>
+
+    <section class="card reveal" data-idx="2">
+      <p class="section-title">Mudhal Nizhalgal</p>
+      <div class="poem">Mudhal noDiyil un smile ennai maari kondu pogudhu; adhu ennai ippothum ulla vivere pannudhu.</div>
+    </section>
+
+    <section class="card reveal" data-idx="3">
+      <p class="section-title">Ninaivugal</p>
+      <div class="poem">- Chinna kavithai, chinna coffee kaalai, oru sirippu kooda. - Mazhai nadayila namma pesum silent kathai.</div>
+    </section>
+
+    <section class="card reveal" data-idx="4">
+      <p class="section-title">En Urudhi</p>
+      <div class="poem">Naan unakku iruppen; porumai, care, matrum amaidhi kooda.</div>
+    </section>
+
+    <section class="card reveal visible" data-idx="5" data-drag="false">
+      <p class="section-title">Chinna Mozhigal (Touch / Drag / Click)</p>
+      <div class="blocks" id="blocks">
+        <div class="flip-card" data-id="1" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front"><div class="title-card">Nee en amaidhi</div><div class="desc">Un voice-le en manam sandhoshama irukku.</div></div>
+            <div class="face back"><div class="title-card">Back</div><div class="desc">Nee eppodhum en karathil irukkum.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card" data-id="2" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front"><div class="title-card">Santhosha Ninaivugal</div><div class="desc">Unexpected smiles namka life-e sweet pannudhu.</div></div>
+            <div class="face back"><div class="title-card">Back</div><div class="desc">Avanga oli en manathil amudham.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card" data-id="3" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front"><div class="title-card">Kuralil Kanavu</div><div class="desc">Un kural enna amaitha melody.</div></div>
+            <div class="face back"><div class="title-card">Back</div><div class="desc">Oru svasam unai ninaithu varudhu.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card" data-id="4" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front"><div class="title-card">Simple Moments</div><div class="desc">Namma normal moments oru mozhiyai sonnathu.</div></div>
+            <div class="face back"><div class="title-card">Back</div><div class="desc">Naalaiyilum naam kooda iruppom.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card" data-id="5" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front"><div class="title-card">Chinna Gift</div><div class="desc">Un kai pidiyil naan irukken — simple, real.</div></div>
+            <div class="face back"><div class="title-card">Back</div><div class="desc">Ithu unnal dhaan en vazhiyai olippathu.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card" data-id="6" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front"><div class="title-card">Nam Journey</div><div class="desc">Kazhudanum nam kaalam pudhu pudhu chapter.</div></div>
+            <div class="face back"><div class="title-card">Back</div><div class="desc">Mudhalaiyum naalum naan unai kaappathu.</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px;">Click panni thrikka, drag panni order maaru (disabled in this section), long-press panni emoji mazha varum.</div>
+    </section>
+
+    <section class="card reveal" data-idx="6">
+      <p class="section-title">Kaadhal Book (Flip Pages)</p>
+      <div class="book" id="book">
+        <div class="book-view" id="bookView" aria-live="polite">
+          <div class="page" data-page="0" style="z-index:50">
+            <h3 style="margin:0 0 8px;">Mudhal Sandhippu</h3>
+            <div style="max-width:90%;color:var(--muted)">Andha naal un smile kandadhaina, en nilai mattum maarudhu.</div>
+          </div>
+          <div class="page hidden" data-page="1" style="z-index:40">
+            <h3 style="margin:0 0 8px;">Popular Ninaivugal</h3>
+            <div style="max-width:90%;color:var(--muted)">Coffee, silence, walks — ellam en life-il kadhal maattrangal.</div>
+          </div>
+          <div class="page hidden" data-page="2" style="z-index:30">
+            <h3 style="margin:0 0 8px;">Future</h3>
+            <div style="max-width:90%;color:var(--muted)">Kai pidithu nadapom — en promise unakku.</div>
+          </div>
+        </div>
+
+        <div class="book-controls">
+          <button class="ctrl" id="prevPage" aria-label="Previous page">Back</button>
+          <button class="ctrl" id="nextPage" aria-label="Next page">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card reveal" data-idx="7">
+      <p class="section-title">Oru Kavithai</p>
+      <div class="poem">Maraiya maalai velichathil un peru thodara oru neram — suththamana sooriyan pol en anbu adhai anuppudhu; nee en kanavin nizhali — naan adhil nadandhu varuren.</div>
+    </section>
+
+    <section class="card reveal" data-idx="8">
+      <p class="section-title">Final Gift</p>
+      <div class="gift-wrapper">
+        <div class="gift" id="finalGift" data-gift-end="1" tabindex="0" aria-label="Final gift 1">
+          <div style="font-size:26px">💌</div>
+          <div style="font-size:13px;color:#3a2133;margin-top:6px;">Anbu Letter</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="reveal" data-idx="9">
+      <div class="heartbeat" aria-hidden="true" title="Heart">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 21s-7-4.2-9-6.6C0.6 10 4.6 5 8 7c1.2.9 1.9 2.2 2.9 2.2 1 0 1.7-1.3 2.9-2.2 3.4-2 7.4 3 5 7.4-2 2.4-9 6.6-9 6.6z" />
+        </svg>
+      </div>
+      <div>Yedhum anbudan — Karthi ♥ Amma</div>
+    </footer>
+  </main>
+
+  <div id="particle-layer" aria-hidden="true"></div>
+
+  <div class="image-modal" id="imageModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="image-card" role="document">
+      <button class="close-btn" id="closeImage" aria-label="Close">✕</button>
+      <img id="modalImage" alt="Keepsake image" src="image.jpg" onerror="this.style.display='none'; document.getElementById('imagePlaceholder').style.display='block'">
+      <div id="imagePlaceholder" style="display:none; padding:28px; background:linear-gradient(180deg,#ffeef6,#fff);">
+        <div style="font-size:24px; color:var(--accent-red); margin-bottom:8px;">💌</div>
+        <div style="font-size:16px; color:#341427;">Anbu kaditham — en heart la irundhu</div>
+        <div style="color:var(--muted); margin-top:6px;">(image.jpg illa — ippo mudhalil placeholder)</div>
+      </div>
+      <div id="imgCaption" class="caption" style="display:none">Amma — eppodhum en ninaivugalil</div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Basic environment flags
+      const supportsVibrate = 'vibrate' in navigator;
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isMobile = window.matchMedia('(max-width:720px)').matches;
+
+      // Performance-tuned particle system:
+      // - much lower pool & MAX on mobile
+      // - smaller spawn counts & lifetimes
+      // - pause when page hidden or no activity to free CPU
+      const EMOJIS = ['❤️','😍','💕','💖','💫','🥰','🌸','✨'];
+      const HEART_SVG_WHITE = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%23ffffff" d="M12 21s-7-4.2-9-6.6C0.6 10 4.6 5 8 7c1.2.9 1.9 2.2 2.9 2.2 1 0 1.7-1.3 2.9-2.2 3.4-2 7.4 3 5 7.4-2 2.4-9 6.6-9 6.6z"/></svg>';
+      const COLORS = ['#ff4d86','#ff9ccf','#ffdff0','#ffb6dd'];
+
+      const layer = document.getElementById('particle-layer');
+      const pool = [];
+      const active = new Set();
+
+      // Aggressive caps for mobile
+      const MAX = isMobile ? 140 : 700;
+      const INITIAL_POOL = isMobile ? 10 : 48;
+
+      // Lifetimes and spawn multipliers
+      const BASE_LIFE = isMobile ? 900 : 1200;
+      const LIFE_VARIANCE = isMobile ? 900 : 2600;
+      const SPAWN_MULTIPLIER = isMobile ? 0.42 : 1;
+
+      // Create initial pool
+      for(let i=0;i<INITIAL_POOL;i++){
+        const el = document.createElement('div');
+        el.className = 'particle';
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+        el._x = 0; el._y = 0;
+        pool.push(el);
+      }
+
+      function obtainParticle(){
+        if(pool.length) return pool.pop();
+        if(active.size + pool.length < MAX){
+          // create small batches to avoid GC spikes
+          for(let i=0;i<6;i++){
+            const el = document.createElement('div');
+            el.className = 'particle';
+            el.style.opacity = '0';
+            el.style.pointerEvents = 'none';
+            el._x = 0; el._y = 0;
+            pool.push(el);
+          }
+          return pool.pop();
+        }
+        return null;
+      }
+
+      function releaseParticle(el){
+        if(!el) return;
+        el._popped = true;
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0';
+        if(el.parentNode) el.parentNode.removeChild(el);
+        active.delete(el);
+        // Recycle but avoid growing pool too large on mobile
+        if(pool.length < Math.max(12, INITIAL_POOL)) pool.push(el);
+      }
+
+      function spawnAt(x,y,count=1,opts){
+        if(prefersReduced) return;
+        opts = opts || {};
+        const effectiveCount = Math.max(1, Math.round((count || 1) * SPAWN_MULTIPLIER));
+        for(let i=0;i<effectiveCount;i++){
+          if(active.size > MAX) return;
+          const el = obtainParticle(); if(!el) return;
+          const useEmoji = Math.random() > 0.36;
+          if(useEmoji){
+            const emoji = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+            el.textContent = emoji;
+            el.style.fontSize = (10 + Math.floor(Math.random() * (isMobile ? 18 : 24))) + 'px';
+          } else {
+            el.innerHTML = HEART_SVG_WHITE;
+            const path = el.querySelector('path');
+            if(path) path.setAttribute('fill', COLORS[Math.floor(Math.random()*COLORS.length)]);
+          }
+          const size = (opts.minSize||12) + Math.round(Math.random()*(opts.maxSize|| (isMobile?28:40)));
+          el.style.width = size+'px';
+          el.style.height = size+'px';
+          const spread = opts.spread || (isMobile ? 44 : 84);
+          const dx = (-0.5 + Math.random()) * spread;
+          const dy = (-0.5 + Math.random()) * spread;
+          const sx = Math.max(6, Math.min(window.innerWidth-6, x + dx));
+          const sy = Math.max(6, Math.min(window.innerHeight-6, y + dy));
+          el._x = sx; el._y = sy;
+          el.style.left = sx + 'px'; el.style.top = sy + 'px';
+          el._vx = (-0.5 + Math.random()) * (isMobile ? 0.8 : 1.1);
+          el._vy = -0.8 - Math.random() * (isMobile ? 1.2 : 2.2);
+          el._ax = 0; el._ay = 0.02 + Math.random() * 0.04;
+          el._created = performance.now();
+          el._life = BASE_LIFE + Math.random() * LIFE_VARIANCE;
+          el._rot = (-10 + Math.random()*20);
+          el._rotSpeed = (-0.3 + Math.random()*0.6);
+          el._popped = false;
+          el.style.opacity = '1';
+          layer.appendChild(el);
+          active.add(el);
+        }
+      }
+
+      // a lighter "heart burst" for mobile
+      function spawnHeartsAt(x,y,count=1,opts){
+        opts = opts || {};
+        const c = isMobile ? Math.max(4, Math.round(count * 0.42)) : count;
+        spawnAt(x,y,c,opts);
+      }
+
+      function popParticle(el){
+        if(!el || el._popped) return;
+        el._popped = true;
+        // simple scale+fade using WAAPI (low overhead)
+        try{
+          el.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity:1 }, { transform:'translate(-50%,-50%) scale(1.6)', opacity:0 }], { duration:220, easing:'cubic-bezier(.2,.9,.3,1)' });
+        }catch(e){}
+        try{ if(supportsVibrate) navigator.vibrate(8); }catch(e){}
+        setTimeout(()=> releaseParticle(el), 260);
+      }
+
+      // requestAnimationFrame tick but paused when unnecessary
+      let raf = null;
+      let last = performance.now();
+      let tickRunning = false;
+
+      function tick(now){
+        const dt = now - last;
+        last = now;
+        if(active.size){
+          const toRemove = [];
+          active.forEach(el=>{
+            if(el._popped) return;
+            const age = now - el._created;
+            if(age > el._life){
+              el._popped = true;
+              // fade out quickly
+              try{ el.animate([{ opacity:1 }, { opacity:0 }], { duration:200, easing:'linear' }); }catch(e){}
+              setTimeout(()=> releaseParticle(el), 240);
+              return;
+            }
+            // lightweight physics
+            el._vx += el._ax * (dt * 0.06);
+            el._vy += el._ay * (dt * 0.06);
+            el._x += el._vx * (dt * 0.06) * 16;
+            el._y += el._vy * (dt * 0.06) * 16;
+            el._rot = (el._rot + el._rotSpeed * (dt * 0.06) * 6) % 360;
+            el.style.left = el._x + 'px';
+            el.style.top = el._y + 'px';
+            el.style.transform = `translate(-50%,-50%) rotate(${el._rot}deg)`;
+            if(age > el._life * 0.72) el.style.opacity = String(Math.max(0, 1 - ((age - el._life * 0.72) / (el._life * 0.28))));
+            if(el._y > window.innerHeight + 120 || el._x < -120 || el._x > window.innerWidth + 120) toRemove.push(el);
+          });
+          toRemove.forEach(releaseParticle);
+          raf = requestAnimationFrame(tick);
+          tickRunning = true;
+        } else {
+          // no active particles: stop tick to save CPU
+          tickRunning = false;
+          raf = null;
+        }
+      }
+
+      function ensureTick(){
+        if(!tickRunning){
+          last = performance.now();
+          raf = requestAnimationFrame(tick);
+          tickRunning = true;
+        }
+      }
+
+      // Pointer interactions (throttled)
+      let longTimer = null, rainInterval = null, rainOrigin = null;
+      const rainRate = isMobile ? 300 : 140;
+      const app = document.getElementById('app');
+      let lastPointerMove = 0;
+
+      // prevent context menu inside app
+      document.addEventListener('contextmenu', (e)=>{ if(e.target.closest && e.target.closest('#app')) e.preventDefault(); }, { passive:false });
+
+      function pointerDown(e){
+        if(e.button && e.button !== 0) return;
+        const x = e.clientX, y = e.clientY;
+        spawnHeartsAt(x,y, Math.round(12 * SPAWN_MULTIPLIER), { spread: isMobile ? 120 : 160, minSize: 10, maxSize: isMobile ? 28 : 42 });
+        ensureTick();
+        longTimer = setTimeout(()=> startRain(x,y), 440);
+      }
+      function pointerMove(e){
+        // throttle pointermove updates to ~30-45fps
+        const now = performance.now();
+        if(now - lastPointerMove > (isMobile ? 25 : 16)){
+          lastPointerMove = now;
+          if(rainInterval) rainOrigin = { x: e.clientX, y: e.clientY };
+        }
+      }
+      function pointerUp(){
+        clearTimeout(longTimer);
+        stopRain();
+      }
+
+      function startRain(x = window.innerWidth/2, y = -20){
+        if(prefersReduced) return;
+        if(rainInterval) return;
+        rainOrigin = { x, y };
+        rainInterval = setInterval(()=> {
+          const rx = rainOrigin.x + (-24 + Math.random()*48);
+          const ry = rainOrigin.y + (-20 + Math.random()*40);
+          spawnAt(rx, ry, Math.round((4 + Math.floor(Math.random()*6)) * SPAWN_MULTIPLIER), { spread: isMobile ? 60 : 84 });
+          ensureTick();
+        }, rainRate);
+      }
+      function stopRain(){
+        if(rainInterval){ clearInterval(rainInterval); rainInterval=null; rainOrigin=null; }
+      }
+
+      app.addEventListener('pointerdown', pointerDown, { passive:true });
+      app.addEventListener('pointermove', pointerMove, { passive:true });
+      window.addEventListener('pointerup', pointerUp, { passive:true });
+      window.addEventListener('pointercancel', pointerUp, { passive:true });
+
+      // Pause particle processing when page hidden
+      document.addEventListener('visibilitychange', ()=>{
+        if(document.hidden){
+          if(raf) cancelAnimationFrame(raf);
+          raf = null; tickRunning = false;
+        } else {
+          if(active.size) ensureTick();
+        }
+      });
+
+      // Reveal animations (IO) - keep but lighter
+      const reveals = document.querySelectorAll('.reveal');
+      const io = new IntersectionObserver((entries, obs)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const el = entry.target;
+            const idx = Math.max(0, parseInt(el.dataset.idx||'0',10));
+            const delay = Math.min(600, idx * 80);
+            if(prefersReduced) el.classList.add('visible');
+            else setTimeout(()=> el.classList.add('visible'), delay);
+            obs.unobserve(el);
+          }
+        });
+      }, { root:null, rootMargin:'0px 0px -8% 0px', threshold:0.16 });
+      reveals.forEach(r => io.observe(r));
+
+      // Flip & drag optimizations (avoid heavy repaints)
+      let dragging=null, dragStart=null, dragElClone=null, currentIndex=-1;
+      function pointerDownFlip(e){
+        const el = e.currentTarget;
+        if(e.button && e.button !== 0) return;
+        // only initiate drag after small move -> use capture of pointer and create clone lazily on move
+        dragging = el; dragStart = { x:e.clientX, y:e.clientY }; currentIndex = Array.from(el.parentNode.children).indexOf(el);
+        try{ el.setPointerCapture && el.setPointerCapture(e.pointerId); }catch(err){}
+        el._dragging = false;
+      }
+      function pointerMoveFlip(e){
+        if(!dragging) return;
+        const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
+        if(!dragging._dragging && Math.hypot(dx,dy) > 8){
+          // start dragging: create clone
+          dragging._dragging = true;
+          dragElClone = dragging.cloneNode(true);
+          dragElClone.style.position = 'fixed';
+          const r = dragging.getBoundingClientRect();
+          dragElClone.style.left = r.left + 'px';
+          dragElClone.style.top = r.top + 'px';
+          dragElClone.style.width = dragging.offsetWidth + 'px';
+          dragElClone.style.zIndex = 200;
+          dragElClone.classList.add('dragging');
+          document.body.appendChild(dragElClone);
+          dragging.style.opacity = '0.18';
+        }
+        if(dragElClone){
+          dragElClone.style.transform = `translate(${dx}px,${dy}px) rotate(${dx/22}deg)`;
+        }
+      }
+      function pointerUpFlip(e){
+        if(!dragging) return;
+        if(dragging._dragging){
+          const parent = dragging.parentNode;
+          const children = Array.from(parent.children);
+          const cx = e.clientX; let nearestIdx = currentIndex; let minDist = Infinity;
+          children.forEach((ch, idx)=>{
+            const r = ch.getBoundingClientRect();
+            const center = r.left + r.width/2;
+            const d = Math.abs(center - cx);
+            if(d < minDist){ minDist = d; nearestIdx = idx; }
+          });
+          const reference = children[nearestIdx];
+          if(reference && reference !== dragging){
+            if(nearestIdx > currentIndex) parent.insertBefore(dragging, reference.nextSibling); else parent.insertBefore(dragging, reference);
+          }
+        }
+        // cleanup clone
+        if(dragElClone && dragElClone.parentNode) dragElClone.parentNode.removeChild(dragElClone);
+        dragging.style.opacity = '';
+        try{ if(dragging && dragging.releasePointerCapture && e.pointerId !== undefined){ dragging.releasePointerCapture(e.pointerId); } }catch(e){}
+        dragging = null; dragElClone = null; dragStart = null; currentIndex = -1;
+      }
+
+      document.querySelectorAll('.flip-card').forEach(fc=>{
+        const noDrag = fc.closest('[data-drag="false"]');
+        fc.addEventListener('click', (e)=>{ if(dragElClone) return; fc.classList.toggle('flipped'); }, {passive:true});
+        fc.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); fc.classList.toggle('flipped'); } });
+        if(!noDrag){
+          fc.addEventListener('pointerdown', pointerDownFlip, {passive:true});
+          fc.addEventListener('pointermove', pointerMoveFlip, {passive:true});
+          fc.addEventListener('pointerup', pointerUpFlip, {passive:true});
+          fc.addEventListener('pointercancel', pointerUpFlip, {passive:true});
+        } else {
+          fc.style.touchAction = 'manipulation';
+        }
+      });
+
+      // Memory book: lightweight transitions and swipe gestures
+      const pages = Array.from(document.querySelectorAll('.page'));
+      let currentPage = 0;
+      function showPage(idx){
+        pages.forEach((p,i)=>{
+          const isFirst = p.dataset.page === '0';
+          const scale = isFirst ? 0.98 : 1;
+          if(i === idx){
+            p.classList.remove('hidden');
+            p.style.zIndex = 50 - i;
+            p.style.transform = `rotateY(0deg) scale(${scale})`;
+            p.style.opacity = '1';
+          } else if(i < idx){
+            p.classList.add('hidden');
+            p.style.zIndex = 30 - i;
+            p.style.transform = `rotateY(-180deg) scale(${scale})`;
+            p.style.opacity = '0';
+          } else {
+            p.classList.add('hidden');
+            p.style.zIndex = 20 - i;
+            p.style.transform = `rotateY(0deg) scale(${scale})`;
+            p.style.opacity = '0';
+          }
+        });
+      }
+      showPage(0);
+
+      document.getElementById('nextPage').addEventListener('click', ()=>{
+        if(currentPage < pages.length - 1){
+          currentPage++; showPage(currentPage);
+        }
+      }, {passive:true});
+      document.getElementById('prevPage').addEventListener('click', ()=>{
+        if(currentPage > 0){ currentPage--; showPage(currentPage); }
+      }, {passive:true});
+
+      (function(){
+        const view = document.getElementById('bookView'); let sx=0, swiping=false;
+        view.addEventListener('pointerdown', (e)=>{ sx = e.clientX; swiping = true; }, {passive:true});
+        view.addEventListener('pointerup', (e)=>{ if(!swiping) return; const dx = e.clientX - sx; if(dx < -48) document.getElementById('nextPage').click(); else if(dx > 48) document.getElementById('prevPage').click(); swiping=false; }, {passive:true});
+        view.addEventListener('pointercancel', ()=> swiping=false, {passive:true});
+      })();
+
+      // Image modal + confetti (confetti limited on mobile)
+      const finalGift = document.getElementById('finalGift');
+      const imageModal = document.getElementById('imageModal');
+      const closeImage = document.getElementById('closeImage');
+      const modalImage = document.getElementById('modalImage');
+      const imagePlaceholder = document.getElementById('imagePlaceholder');
+      const imgCaption = document.getElementById('imgCaption');
+
+      function openImageModal(){
+        imageModal.classList.add('open'); imageModal.setAttribute('aria-hidden','false');
+        const rect = finalGift.getBoundingClientRect();
+        spawnHeartsAt(rect.left + rect.width/2, rect.top + rect.height/2, isMobile ? 12 : 40, { spread: isMobile ? 160 : 260 });
+        confetti(rect.left + rect.width/2, rect.top + rect.height/2, isMobile ? 18 : 64);
+        setTimeout(()=> { if(modalImage && modalImage.complete && modalImage.naturalWidth !== 0) imgCaption.style.display = 'block'; else imagePlaceholder.style.display = 'block'; }, 150);
+        const focusable = imageModal.querySelectorAll('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+        if(focusable.length) focusable[0].focus();
+        ensureTick();
+      }
+      function closeImageModal(){ imageModal.classList.remove('open'); imageModal.setAttribute('aria-hidden','true'); imagePlaceholder.style.display = 'none'; imgCaption.style.display = 'none'; }
+
+      finalGift && finalGift.addEventListener('click', openImageModal, {passive:true});
+      closeImage && closeImage.addEventListener('click', closeImageModal, {passive:true});
+      imageModal.addEventListener('click', (e)=> { if(e.target === imageModal) closeImageModal(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeImageModal(); });
+
+      // small confetti function (less particles on mobile)
+      function confetti(cx,cy,count=50){
+        const max = isMobile ? Math.min(count, 20) : count;
+        for(let i=0;i<max;i++){
+          const n = document.createElement('div');
+          n.style.position='fixed';
+          n.style.left = (cx + (-80 + Math.random()*160)) + 'px';
+          n.style.top = (cy + (-30 + Math.random()*60)) + 'px';
+          const w = 6 + Math.random()*8, h = 6 + Math.random()*10;
+          n.style.width = w + 'px'; n.style.height = h + 'px';
+          n.style.background = COLORS[Math.floor(Math.random()*COLORS.length)];
+          n.style.borderRadius = (Math.random()*6)+'px';
+          n.style.zIndex = 320; n.style.pointerEvents = 'none'; n.style.opacity = '0.98';
+          document.body.appendChild(n);
+          const dx = (-80 + Math.random()*160), dy = (80 + Math.random()*120), rot = (Math.random()*360), dur = 520 + Math.random()*600;
+          n.animate([{ transform:'translate(0,0) rotate(0deg)', opacity:1 }, { transform:`translate(${dx}px,${dy}px) rotate(${rot}deg)`, opacity:0 }], { duration: dur, easing:'cubic-bezier(.2,.8,.25,1)' });
+          setTimeout(()=> n.remove(), dur + 80);
+        }
+      }
+
+      // footer bursts (limited)
+      document.querySelectorAll('[data-gift-end]').forEach(g=>{
+        g.addEventListener('click', (e)=>{
+          const rect = g.getBoundingClientRect();
+          spawnHeartsAt(rect.left + rect.width/2, rect.top + rect.height/2, isMobile ? 10 : 24, { spread: isMobile ? 140 : 180 });
+          confetti(rect.left + rect.width/2, rect.top + rect.height/2, isMobile ? 12 : 36);
+          ensureTick();
+        }, {passive:true});
+      });
+
+      // initial warm-up (limited on mobile)
+      window.addEventListener('load', ()=>{
+        const first = document.querySelector('.reveal');
+        if(first) first.classList.add('visible');
+        spawnHeartsAt(window.innerWidth/2, 110, isMobile ? 6 : 18, { spread: isMobile ? 180 : 260 });
+        ensureTick();
+      });
+
+      // memory cap cleanup interval (less frequent, lighter)
+      setInterval(()=>{
+        if(active.size > Math.max(300, Math.floor(MAX * 0.75))){
+          const arr = Array.from(active).slice(0, Math.floor(active.size/6));
+          arr.forEach(el => { el._popped = true; if(el.parentNode) el.parentNode.removeChild(el); active.delete(el); });
+        }
+      }, 3500);
+
+    })();
+  </script>
+</body>
+</html>
